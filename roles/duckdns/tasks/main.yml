@@ -1,0 +1,22 @@
+- name: Create DuckDNS directory
+  file:
+    path: /home/keaton/duckdns
+    state: directory
+    owner: keaton
+    group: keaton
+
+- name: Create DuckDNS update script
+  copy:
+    content: |
+      echo url="https://www.duckdns.org/update?domains=hoskinsrv&token=6f247643-985a-4a5e-ab7a-953bfe70a016&ip=" | curl -k -o /home/keaton/duckdns/duck.log -K -
+    dest: /home/keaton/duckdns/duck.sh
+    owner: keaton
+    group: keaton
+    mode: 0700
+
+- name: Add DuckDNS cron job
+  cron:
+    name: "Update DuckDNS IP"
+    minute: "*/5"
+    job: "/home/keaton/duckdns/duck.sh >/dev/null 2>&1"
+    user: keaton

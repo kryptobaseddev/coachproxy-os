@@ -8,4 +8,6 @@
     - coachproxy
     - node-red   # Must be after 'coachproxy' role
     - networking
+    - duckdns # DuckDns setup for remote access
+    - npm # custom setup for adding nginx proxy manager
     - misc

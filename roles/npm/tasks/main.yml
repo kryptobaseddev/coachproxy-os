@@ -1,0 +1,63 @@
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Install Docker Compose
+  apt:
+    name: docker-compose
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Create Nginx Proxy Manager directory
+  file:
+    path: /home/keaton/nginx-proxy-manager
+    state: directory
+    owner: keaton
+    group: keaton
+
+- name: Create Docker Compose file for Nginx Proxy Manager
+  copy:
+    content: |
+      version: '3'
+      services:
+        app:
+          image: 'jc21/nginx-proxy-manager:latest'
+          restart: unless-stopped
+          ports:
+            - '80:80'
+            - '81:81'  # Management UI
+            - '443:443'
+          environment:
+            DB_MYSQL_HOST: "db"
+            DB_MYSQL_PORT: 3306
+            DB_MYSQL_USER: "npm"
+            DB_MYSQL_PASSWORD: "npm"
+            DB_MYSQL_NAME: "npm"
+          volumes:
+            - ./data:/data
+            - ./letsencrypt:/etc/letsencrypt
+
+        db:
+          image: 'mysql:5.7'
+          restart: unless-stopped
+          environment:
+            MYSQL_ROOT_PASSWORD: 'npm'
+            MYSQL_DATABASE: 'npm'
+            MYSQL_USER: 'npm'
+            MYSQL_PASSWORD: 'npm'
+          volumes:
+            - ./data/mysql:/var/lib/mysql
+    dest: /home/keaton/nginx-proxy-manager/docker-compose.yml
+    owner: keaton
+    group: keaton
+    mode: 0644
+
+- name: Start Nginx Proxy Manager
+  command: docker-compose up -d
+  args:
+    chdir: /home/keaton/nginx-proxy-manager/
+  become: true
