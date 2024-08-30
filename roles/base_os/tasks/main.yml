@@ -1,4 +1,4 @@
-
+# File: roles/base_os/tasks/main.yml
 ---
 
 - name: Set hostname to coachproxyos

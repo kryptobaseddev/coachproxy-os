@@ -1,32 +1,15 @@
 #!/bin/bash
 #
-# Copyright (C) 2019 Wandertech LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# apply_remote_access_settings.sh
-# Read the Remote Access settings from the sqlite database, update
-# the ngrok.conf file with the new values, and stop or start the
-# tunnel.
+# File: roles/coachproxy/files/bin/apply_remote_access_settings.sh
 
 log=/coachproxy/bin/cplog.sh
 script=$(basename $0 .sh)
-conf=/coachproxy/etc/ngrok.conf
+conf_ngrok=/coachproxy/etc/ngrok.conf
+conf_duckdns=/coachproxy/etc/duckdns.conf
 
 log () {
   if [[ "$silent" = false ]]; then
-    $log "$script $1 Stopping ngrok tunnel."
+    $log "$script $1"
   fi
 }
 
@@ -41,10 +24,12 @@ disable () {
 abort () {
   send_message "$1"
   echo "$1"
-  log "$script $1 Stopping ngrok tunnel."
-  sudo killall ngrok
+  log "$script $1 Stopping remote access."
+  if [[ $remote_access_method == "ngrok" ]]; then
+    sudo killall ngrok
+  fi
   disable
-  exit 0;
+  exit 0
 }
 
 silent=false
@@ -57,7 +42,8 @@ fi
 # Wait a second to ensure node-red finishes updating the database
 sleep 1
 
-# Get the settings from the database.
+# Get the settings from the database
+remote_access_method=$(echo "select value from settings2 where key='remote_access_method';" | sqlite3 /coachproxy/node-red/coachproxy.sqlite)
 user=$(echo "select value from settings2 where key='remote_username';" | sqlite3 /coachproxy/node-red/coachproxy.sqlite)
 pass=$(echo "select value from settings2 where key='remote_password';" | sqlite3 /coachproxy/node-red/coachproxy.sqlite)
 auth=$(echo "select value from settings2 where key='ngrok_auth';" | sqlite3 /coachproxy/node-red/coachproxy.sqlite)
@@ -68,35 +54,47 @@ if [[ $enabled != 'true' ]]; then
   abort "Remote access is disabled."
 fi
 
-if [[ ${#auth} -lt 5 ]]; then
-  abort "ERROR: ngrok Authtoken is missing."
+if [[ $remote_access_method == "ngrok" ]]; then
+  if [[ ${#auth} -lt 5 ]]; then
+    abort "ERROR: ngrok Authtoken is missing."
+  fi
+
+  if [[ ${#user} -lt 1 ]]; then
+    abort "ERROR: Username is missing."
+  fi
+
+  if [[ ${#pass} -lt 1 ]]; then
+    abort "ERROR: Password is missing."
+  fi
+
+  # If a custom subdomain is used, bind the main tunnel to https only.
+  bind_tls=true
+  if [[ ${#domain} -lt 1 ]]; then
+    bind_tls=both
+  fi
+
+  # Rebuild config file for ngrok
+  log "$script updating ngrok.conf with latest user settings"
+  sed "${conf_ngrok}-TEMPLATE" -e "s/AUTHTOKEN/$auth/" -e "s/USERNAME/$user/" -e "s/PASSWORD/$pass/" -e "s/BIND_TLS/$bind_tls/" -e "s/SUBDOMAIN/$domain/" > $conf_ngrok
+
+  # Restart ngrok tunnel
+  log "$script restarting ngrok tunnel."
+  send_message "Restarting remote access system. See above for URL."
+  sudo killall ngrok
+  sleep 2
+  /usr/local/bin/ngrok start -config $conf_ngrok --all &
+
+elif [[ $remote_access_method == "duckdns" ]]; then
+  if [[ ${#domain} -lt 1 ]]; then
+    abort "ERROR: DuckDNS domain is missing."
+  fi
+  if [[ ${#auth} -lt 1 ]]; then
+    abort "ERROR: DuckDNS token is missing."
+  fi
+
+  # Write DuckDNS config
+  log "$script updating DuckDNS..."
+  echo "url=\"https://www.duckdns.org/update?domains=$domain&token=$auth&ip=\"" > $conf_duckdns
+  curl -k -o /var/log/duck.log -K $conf_duckdns
+  send_message "DuckDNS updated with domain $domain."
 fi
-
-if [[ ${#user} -lt 1 ]]; then
-  abort "ERROR: Username is missing."
-fi
-
-if [[ ${#pass} -lt 1 ]]; then
-  abort "ERROR: Password is missing."
-fi
-
-# If a custom subdomain is used, bind the main tunnel to https only.
-# The secondary tunnel will then be bound to http using the same
-# domain name. If a custom subdomain is not used, bind the main tunnel
-# to both http and https, since the secondary tunnel will have a
-# completely different URL which won't be usable by the user.
-bind_tls=true
-if [[ ${#domain} -lt 1 ]]; then
-  bind_tls=both
-fi
-
-# Rebuild config file
-log "$script update ngrok.conf with latest user settings"
-sed "${conf}-TEMPLATE" -e "s/AUTHTOKEN/$auth/" -e "s/USERNAME/$user/" -e "s/PASSWORD/$pass/" -e "s/BIND_TLS/$bind_tls/" -e "s/SUBDOMAIN/$domain/" > $conf
-
-# Restart tunnel
-log "$script restarting ngrok tunnel."
-send_message "Restarting remote access system. See above for URL."
-sudo killall ngrok
-sleep 2
-/usr/local/bin/ngrok start -config /coachproxy/etc/ngrok.conf --all &

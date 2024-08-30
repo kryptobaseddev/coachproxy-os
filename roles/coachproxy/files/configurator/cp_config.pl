@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#
+# File: roles/coachproxy/files/configurator/cp_config.pl
 # Copyright (C) 2019 Wandertech LLC
 #
 # This program is free software: you can redistribute it and/or modify
@@ -522,3 +522,16 @@ if ($reboot) {
   # Note: if this script was called from within nodered, the below statement will kill this script.
   system("sudo systemctl restart nodered");
 }
+
+# Retrieve Remote Access method (Ngrok or DuckDNS)
+my $remote_access_method = get_config("remote_access_method");
+
+if ($remote_access_method eq 'ngrok') {
+    # Handle Ngrok configuration
+} elsif ($remote_access_method eq 'duckdns') {
+    # Handle DuckDNS configuration
+    my $duckdns_subdomain = get_config("duckdns_subdomain");
+    my $duckdns_token = get_config("duckdns_token");
+    # Additional code to update DuckDNS using the provided subdomain and token
+}
+

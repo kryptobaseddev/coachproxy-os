@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#
+# File: roles/coachproxy/files/configurator/node_remover.pl
 # Copyright (C) 2019 Wandertech LLC
 #
 # This program is free software: you can redistribute it and/or modify

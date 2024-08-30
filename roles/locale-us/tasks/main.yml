@@ -1,3 +1,4 @@
+# File: roles/locale-us/tasks/main.yml
 # Change locale info from GB to US
 
 ---

@@ -1,3 +1,4 @@
+// File: roles/coachproxy/files/node-red/settings.js
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *

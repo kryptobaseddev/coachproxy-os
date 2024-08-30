@@ -1,0 +1,194 @@
+├── ansible.cfg
+├── coachproxyos.yml
+├── CONTRIBUTING.md
+├── docs
+│  ├── Build_Device.md
+│  ├── Build_Image.md
+│  ├── Download_Image.md
+│  ├── Roadmap.md
+│  ├── Software_Overview.md
+│  └── Tiffin_RVC_Notes.md
+├── images
+│  ├── ansible-1.png
+│  ├── canbus_wiring.jpg
+│  ├── flows-1.jpg
+│  └── ui-interior.png
+├── inventory
+│  └── hosts.yml
+├── LICENSE
+├── README.md
+├── roles
+│  ├── base_os
+│  │  ├── files
+│  │  │  ├── logrotate.conf
+│  │  │  └── public_keys
+│  │  │    └── root-coachproxy
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── coachproxy
+│  │  ├── files
+│  │  │  ├── bin
+│  │  │  │  ├── apply_remote_access_settings.sh
+│  │  │  │  ├── coachproxy_watchdog.sh
+│  │  │  │  ├── cplog.sh
+│  │  │  │  ├── reset_firewall.sh
+│  │  │  │  ├── rvc2mqtt.pl
+│  │  │  │  ├── safe_reboot
+│  │  │  │  ├── safe_shutdown
+│  │  │  │  ├── serialnumber.sh
+│  │  │  │  ├── version.sh
+│  │  │  │  ├── wifi_link_quality.sh
+│  │  │  │  └── wifi_mqtt.pl
+│  │  │  ├── configurator
+│  │  │  │  ├── cp_config.pl
+│  │  │  │  ├── features.json
+│  │  │  │  ├── flows_coachproxy-template.json
+│  │  │  │  ├── node_changer.pl
+│  │  │  │  └── node_remover.pl
+│  │  │  ├── etc
+│  │  │  │  ├── cron.d
+│  │  │  │  │  └── coachproxy
+│  │  │  │  ├── dpkg
+│  │  │  │  │  └── dpkg.cfg.d
+│  │  │  │  │    └── 01_nodoc
+│  │  │  │  ├── hosts
+│  │  │  │  ├── mosquitto
+│  │  │  │  │  └── mosquitto.conf
+│  │  │  │  ├── nginx
+│  │  │  │  │  └── sites-available
+│  │  │  │  │    ├── 10-CoachProxy.conf
+│  │  │  │  │    └── 20-SSLRedirect.conf
+│  │  │  │  ├── ngrok.conf-TEMPLATE
+│  │  │  │  ├── profile.d
+│  │  │  │  │  └── coachproxy.sh
+│  │  │  │  ├── rc.local.coachproxy
+│  │  │  │  ├── resolv.conf
+│  │  │  │  ├── resolvconf.conf
+│  │  │  │  ├── rvc-spec.yml
+│  │  │  │  ├── systemd
+│  │  │  │  │  ├── network
+│  │  │  │  │  │  ├── 04-eth0.network
+│  │  │  │  │  │  └── 12-wlan0.network
+│  │  │  │  │  └── system
+│  │  │  │  │    └── habridge.service
+│  │  │  │  └── vim
+│  │  │  │    └── vimrc.local
+│  │  │  ├── ha-bridge
+│  │  │  │  ├── device.db
+│  │  │  │  ├── device.db-blank
+│  │  │  │  ├── disable
+│  │  │  │  ├── enable
+│  │  │  │  ├── ha-bridge-5.2.1.jar
+│  │  │  │  ├── ha-bridge.jar
+│  │  │  │  ├── habridge.config.template
+│  │  │  │  ├── re-init
+│  │  │  │  └── re-ip.sh
+│  │  │  ├── log
+│  │  │  │  └── .gitignore
+│  │  │  ├── node-red
+│  │  │  │  ├── coachproxy.sqlite-base
+│  │  │  │  ├── flows_coachproxy-base.json
+│  │  │  │  ├── js
+│  │  │  │  │  ├── ats_source_decode.js
+│  │  │  │  │  ├── ceiling_fan_decode.js
+│  │  │  │  │  ├── command_dc_dimmer.js
+│  │  │  │  │  ├── decode_chassis_mobility.js
+│  │  │  │  │  ├── decode_dc_dimmer_light.js
+│  │  │  │  │  ├── decode_dc_source.js
+│  │  │  │  │  ├── decode_fan.js
+│  │  │  │  │  ├── decode_floor_ambient_status.js
+│  │  │  │  │  ├── decode_floor_status.js
+│  │  │  │  │  ├── decode_tank.js
+│  │  │  │  │  ├── decode_vent.js
+│  │  │  │  │  ├── emails_parse.js
+│  │  │  │  │  ├── emails_store.js
+│  │  │  │  │  ├── floor_heat_manager.js
+│  │  │  │  │  ├── form_field_save.js
+│  │  │  │  │  ├── function_floor_power.js
+│  │  │  │  │  ├── function_floor_setpoint.js
+│  │  │  │  │  ├── furnace_status_decode.js
+│  │  │  │  │  ├── genset_clear_buffer.js
+│  │  │  │  │  ├── genset_countdown.js
+│  │  │  │  │  ├── genset_safety.js
+│  │  │  │  │  ├── initialize_global_context.js
+│  │  │  │  │  ├── levels_display.js
+│  │  │  │  │  ├── levels_parse.js
+│  │  │  │  │  ├── levels_store.js
+│  │  │  │  │  ├── misc_display.js
+│  │  │  │  │  ├── misc_parse.js
+│  │  │  │  │  ├── misc_store.js
+│  │  │  │  │  ├── network_info.js
+│  │  │  │  │  ├── notification_deliver.js
+│  │  │  │  │  ├── notification_menu_options.js
+│  │  │  │  │  ├── notification_save.js
+│  │  │  │  │  ├── notification_state_monitor.js
+│  │  │  │  │  ├── notification_submenu_options.js
+│  │  │  │  │  ├── notification_value_monitor.js
+│  │  │  │  │  ├── power_flow_function.js
+│  │  │  │  │  ├── preset_delete.js
+│  │  │  │  │  ├── preset_restore.js
+│  │  │  │  │  ├── preset_save.js
+│  │  │  │  │  ├── thermostat_ambient_decode_ext.js
+│  │  │  │  │  ├── thermostat_ambient_decode.js
+│  │  │  │  │  ├── thermostat_command.js
+│  │  │  │  │  ├── thermostat_status_decode.js
+│  │  │  │  │  ├── uptime_parse.js
+│  │  │  │  │  ├── wifi_direct_cancel.js
+│  │  │  │  │  ├── wifi_direct_parse.js
+│  │  │  │  │  ├── wifi_direct_save.js
+│  │  │  │  │  ├── wifi_password_blank.js
+│  │  │  │  │  ├── wifi_scanner_parse.js
+│  │  │  │  │  ├── wifi_static_cancel.js
+│  │  │  │  │  ├── wifi_static_parse.js
+│  │  │  │  │  ├── wifi_static_save.js
+│  │  │  │  │  ├── wifi_wpa_cancel.js
+│  │  │  │  │  ├── wifi_wpa_parse.js
+│  │  │  │  │  └── wifi_wpa_save.js
+│  │  │  │  └── settings.js
+│  │  │  ├── rv-c
+│  │  │  │  ├── ac_load.pl
+│  │  │  │  ├── ceiling_fan.pl
+│  │  │  │  ├── dc_ac_combo.pl
+│  │  │  │  ├── dc_dimmer_pair.pl
+│  │  │  │  ├── dc_dimmer.pl
+│  │  │  │  ├── elec_aquahot.pl
+│  │  │  │  ├── floor_heat.pl
+│  │  │  │  ├── generator.pl
+│  │  │  │  ├── lift.pl
+│  │  │  │  ├── locks.pl
+│  │  │  │  ├── master.pl
+│  │  │  │  ├── panel_lights.pl
+│  │  │  │  ├── thermostats.pl
+│  │  │  │  ├── vent_fan_new.pl
+│  │  │  │  ├── vent_fan.pl
+│  │  │  │  ├── vent_lid.pl
+│  │  │  │  └── window_shade.pl
+│  │  │  └── VERSION
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── duckdns
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── locale-us
+│  │  ├── files
+│  │  │  ├── keyboard
+│  │  │  └── locale
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── misc
+│  │  ├── files
+│  │  │  ├── CoachProxy_logo.jpg
+│  │  │  ├── icon120x120.png
+│  │  │  ├── icon192x192.png
+│  │  │  └── icon64x64.png
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── networking
+│  │  └── tasks
+│  │    └── main.yml
+│  ├── node-red
+│  │  ├── files
+│  │  │  └── font-awesome-animation.min.css
+│  │  └── tasks
+│  │    └── main.yml
+└── vars.yml

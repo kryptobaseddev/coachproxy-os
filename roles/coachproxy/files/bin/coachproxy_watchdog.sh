@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+# File: roles/coachproxy/files/bin/coachproxy_watchdog.sh
 # Copyright (C) 2019 Wandertech LLC
 #
 # This program is free software: you can redistribute it and/or modify
@@ -48,11 +49,23 @@ if [ $(/bin/pidof -x wifi_mqtt.pl | wc -w) -eq 0 ]; then
 fi
 
 # If ngrok tunnel is down but should be up, try starting it.
-enabled=$(echo "select value from settings2 where key='remote_access';" | sqlite3 /coachproxy/node-red/coachproxy.sqlite)
+enabled=$(sqlite3 /coachproxy/node-red/coachproxy.sqlite "SELECT value FROM settings2 WHERE key='remote_access';")
+remote_access_method=$(sqlite3 /coachproxy/node-red/coachproxy.sqlite "SELECT value FROM settings2 WHERE key='remote_access_method';")
+
+# Check if remote access is enabled
 if [[ $enabled == 'true' ]]; then
-  if [ -z $(/bin/pidof -x ngrok) ]; then
-    $LOG "$SCRIPT ngrok tunnel is down. Attempting restart..."
-   /coachproxy/bin/apply_remote_access_settings.sh --silent &> /dev/null &
+  # Handle Ngrok
+  if [[ $remote_access_method == "ngrok" ]]; then
+    # If ngrok process is not running, restart it
+    if [[ -z $(/bin/pidof -x ngrok) ]]; then
+      $LOG "$SCRIPT ngrok tunnel is down. Attempting restart..."
+      /coachproxy/bin/apply_remote_access_settings.sh --silent &> /dev/null &
+    fi
+  # Handle DuckDNS
+  elif [[ $remote_access_method == "duckdns" ]]; then
+    # Update DuckDNS (Note: DuckDNS doesn't have a "tunnel" to keep alive, so we simply ensure the IP is up-to-date)
+    $LOG "$SCRIPT updating DuckDNS..."
+    /coachproxy/bin/apply_remote_access_settings.sh --silent &> /dev/null &
   fi
 fi
 

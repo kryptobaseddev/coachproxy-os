@@ -1,4 +1,4 @@
-//
+//File: roles/coachproxy/files/node-red/js/initialize_global_context.js
 // Copyright (C) 2019 Wandertech LLC
 //
 // This program is free software: you can redistribute it and/or modify

@@ -1,0 +1,3 @@
+ansible_user: "keaton"
+ansible_password: "mypassword"
+ansible_host: "10.0.10.108"
