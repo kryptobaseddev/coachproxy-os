@@ -26,10 +26,11 @@
   become: true
 
 # This fails when mixed in with the other packages, so it's handled separately here.
-- name: Ensure Java 8 JRE is installed
+# Update to use Java 11
+- name: Ensure Java 11 JRE is installed
   become: true
   apt:
-    name: openjdk-8-jre-headless
+    name: openjdk-11-jre-headless
     state: present
 
 - name: Ensure required packages are installed
