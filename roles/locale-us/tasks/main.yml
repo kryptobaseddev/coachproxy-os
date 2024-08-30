@@ -41,6 +41,5 @@
 - name: Delete non-en locale files to save space
   shell: rm -rf /usr/share/locale/[a-d,f-z]*
   args:
-    warn: no
     removes: /usr/share/locale/zu
   become: true
