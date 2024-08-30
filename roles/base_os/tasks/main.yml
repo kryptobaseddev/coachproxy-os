@@ -91,10 +91,10 @@
     state: absent
   become: true
 
+# Remove 'system_lib: true' parameter as it is not supported
 - name: Install required Perl modules
   cpanm:
     name: "{{ item }}"
-    system_lib: true
   become: true
   with_items:
     - Switch
