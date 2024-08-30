@@ -26,11 +26,11 @@
   become: true
 
 # This fails when mixed in with the other packages, so it's handled separately here.
-# Update to use Java 11
-- name: Ensure Java 11 JRE is installed
+# Update to use Java 17 JRE
+- name: Ensure Java 17 JRE is installed
   become: true
   apt:
-    name: openjdk-11-jre-headless
+    name: openjdk-17-jre-headless
     state: present
 
 - name: Ensure required packages are installed
